@@ -69,10 +69,10 @@ python3 cli.py stage --preview <preview_id> --items items.json --confirm
 
 | 宿主 | 安装方式 |
 |---|---|
-| Claude Code | `/plugin marketplace add <repo>` → `/plugin install ai-interview-bank@<marketplace>`；插件通过 `.claude-plugin/plugin.json` 声明 skills 与 `.mcp.json` |
-| Codex | `codex plugin marketplace add <repo>` → `codex plugin add ai-interview-bank@<marketplace>`；或把本目录放进 `.codex/skills/` 并手动 `codex mcp add` |
+| Claude Code | `/plugin marketplace add Imchengliang/ai-interview-bank` → `/plugin install ai-interview-bank@ai-interview-bank-marketplace`；插件通过 `.claude-plugin/plugin.json` 声明 skills 与 `.mcp.json` |
+| Codex | `codex plugin marketplace add Imchengliang/ai-interview-bank` → `codex plugin add ai-interview-bank@ai-interview-bank-marketplace`；或把本目录放进 `.codex/skills/` 并手动 `codex mcp add` |
 | WorkBuddy | 复制本目录到 `~/.workbuddy/skills/ai-interview-bank/` |
-| 通用 | `npx skills add <repo>` 安装到 `.agents/skills/`；任意 MCP 客户端配置 `python3 <包>/mcp_server.py` |
+| 通用 | `npx skills add Imchengliang/ai-interview-bank` 安装到 `.agents/skills/`；任意 MCP 客户端配置 `python3 <包>/mcp_server.py` |
 | DeepSeek Harness (dsh) | `dsh plugin --profile <name> add <包>/agents/deepseek-harness`；`dsh.bundle.patch` 声明会让 dsh 自动把包加入 `dsh.profile.bundles`。四个只读工具经本地 CLI 调用，需设置 `AI_INTERVIEW_BANK_ROOT` 指向主包目录。dsh 默认不启用 MCP server、只桥接 Tools，故不走 MCP 路径 |
 
 ### 宿主实测要点（实测于 claude 2.1.234 / codex 0.164.0 / dsh 0.1.5-rc.1 / WorkBuddy）

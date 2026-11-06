@@ -34,11 +34,11 @@
 
 | 宿主 | 安装方式 |
 |---|---|
-| **Claude Code** | `/plugin marketplace add <owner>/<repo>` → `/plugin install ai-interview-bank@ai-interview-bank-marketplace` |
-| **Codex** | `codex plugin marketplace add <owner>/<repo>` → `codex plugin add ai-interview-bank@ai-interview-bank-marketplace` |
+| **Claude Code** | `/plugin marketplace add Imchengliang/ai-interview-bank` → `/plugin install ai-interview-bank@ai-interview-bank-marketplace` |
+| **Codex** | `codex plugin marketplace add Imchengliang/ai-interview-bank` → `codex plugin add ai-interview-bank@ai-interview-bank-marketplace` |
 | **WorkBuddy** | 复制本目录到 `~/.workbuddy/skills/ai-interview-bank/` |
 | **DeepSeek Harness** | `dsh plugin --profile <name> add <包路径>/agents/deepseek-harness`，并把 `AI_INTERVIEW_BANK_ROOT` 指向主包目录 |
-| **通用 / 任意 MCP 客户端** | `npx skills add <owner>/<repo>`，或在 MCP 配置里指向 `python3 <包路径>/mcp_server.py` |
+| **通用 / 任意 MCP 客户端** | `npx skills add Imchengliang/ai-interview-bank`，或在 MCP 配置里指向 `python3 <包路径>/mcp_server.py` |
 
 要求：Python 3.9+，无第三方依赖（MCP server 是手写的 stdio JSON-RPC，不需要 `mcp` / `fastmcp`）。
 
