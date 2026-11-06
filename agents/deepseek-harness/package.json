@@ -4,7 +4,7 @@
   "type": "module",
   "main": "./plugin.mjs",
   "exports": { ".": "./plugin.mjs" },
-  "description": "DeepSeek Harness (Cordis) adapter for the AI interview question bank plugin. Four read-only tools backed by the local CLI.",
+  "description": "AI 面试题库插件的 DeepSeek Harness（Cordis）适配器：四个只读工具，经本地 CLI 调用。",
   "files": ["plugin.mjs", "cordis.patch.yml"],
   "dsh": {
     "bundle": {

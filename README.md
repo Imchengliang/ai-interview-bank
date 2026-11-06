@@ -1,8 +1,6 @@
-# AI Interview Bank
+# AI 面试题库（ai-interview-bank）
 
 把零散的 AI 面试题沉淀成**一份**可检索、可生长的本地题库，并从中生成知识图谱。支持 Claude Code / Codex / WorkBuddy / DeepSeek Harness 四种宿主安装。
-
-An agent-installable plugin that turns scattered AI interview notes into a single local question bank plus a knowledge graph. Works with Claude Code, Codex, WorkBuddy, and DeepSeek Harness.
 
 ---
 
@@ -147,6 +145,6 @@ python3 tests/host_matrix.py      # 11 项：四宿主配置与变量规则（�
 node tests/dsh_adapter_test.mjs   # dsh 适配器运行时验证
 ```
 
-## License
+## 许可证
 
 MIT
