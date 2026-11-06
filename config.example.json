@@ -1,0 +1,23 @@
+{
+  "bank_path": "~/Documents/interview/ai_question.md",
+  "write_policy": "preview-confirm",
+  "modes": {
+    "m0_manual_link": true,
+    "m1_keyword_scan": false,
+    "m2_creator_watch": false,
+    "m3_collection_import": false,
+    "m4_forward_inbox": false,
+    "m5_cross_platform": false,
+    "m6_graph_gap_probe": false,
+    "m7_comment_harvest": false,
+    "m8_digest": false
+  },
+  "state_dir": "state",
+  "graph_dir": "graph",
+  "entity_terms": [
+    "RAG", "Rerank", "Agent", "ReAct", "LangGraph", "LangChain", "MCP",
+    "Function Calling", "Prompt", "Checkpoint", "State", "Reducer", "Skill",
+    "Redis", "SSE", "WebSocket", "Docker", "沙箱", "向量库", "Embedding",
+    "幻觉", "评测集", "Token", "上下文", "意图识别", "缓存", "并发"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "ai-interview-bank": {
+      "command": "/bin/sh",
+      "args": [
+        "-c",
+        "for d in \"$@\"; do [ -f \"$d/mcp_server.py\" ] && exec python3 \"$d/mcp_server.py\"; done; for f in \"$HOME\"/.codex/plugins/cache/*/ai-interview-bank/*/mcp_server.py \"$HOME\"/.claude/plugins/cache/*/ai-interview-bank/*/mcp_server.py ./mcp_server.py; do [ -f \"$f\" ] && exec python3 \"$f\"; done; echo 'ai-interview-bank: mcp_server.py not found' >&2; exit 1",
+        "sh",
+        "${CLAUDE_PLUGIN_ROOT}",
+        "${PLUGIN_ROOT}"
+      ]
+    }
+  }
+}

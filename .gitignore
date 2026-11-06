@@ -1,0 +1,16 @@
+# Local install config (copy config.example.json and edit bank_path)
+config.json
+
+# Runtime artefacts: internal cursor, previews, fetched candidates, graph output
+state/
+graph/
+
+# Python
+__pycache__/
+*.pyc
+
+# macOS
+.DS_Store
+
+# Node
+node_modules/

@@ -1,0 +1,15 @@
+{
+  "name": "ai-interview-bank",
+  "displayName": "AI Interview Question Bank",
+  "description": "从小红书等来源收集 AI 面试题，语义去重后构建本地题库与知识图谱；只读 MCP 工具 + 预览确认写入。",
+  "version": "0.1.0",
+  "author": {
+    "name": "Imchengliang"
+  },
+  "homepage": "https://github.com/Imchengliang/ai-interview-bank",
+  "repository": "https://github.com/Imchengliang/ai-interview-bank",
+  "license": "MIT",
+  "skills": ["./"],
+  "mcpServers": "./.mcp.json",
+  "keywords": ["interview", "agent", "rag", "knowledge-graph", "xiaohongshu"]
+}

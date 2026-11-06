@@ -1,0 +1,5 @@
+# Cordis overlay row. `name` points at the npm package declared in package.json.
+# Keep the id stable so a later profile patch can override it.
+- insert:
+    - id: ai-interview-bank
+      name: dsh-ai-interview-bank

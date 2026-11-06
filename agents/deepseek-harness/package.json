@@ -1,0 +1,14 @@
+{
+  "name": "dsh-ai-interview-bank",
+  "version": "0.1.1",
+  "type": "module",
+  "main": "./plugin.mjs",
+  "exports": { ".": "./plugin.mjs" },
+  "description": "DeepSeek Harness (Cordis) adapter for the AI interview question bank plugin. Four read-only tools backed by the local CLI.",
+  "files": ["plugin.mjs", "cordis.patch.yml"],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "ai-interview-bank-marketplace",
+  "description": "Local marketplace for the AI interview question bank plugin: one Skill plus a read-only MCP server for preview/search/graph queries.",
+  "owner": {
+    "name": "Imchengliang"
+  },
+  "plugins": [
+    {
+      "name": "ai-interview-bank",
+      "source": "./",
+      "description": "AI 面试题本地题库 + 知识图谱；只读 MCP 工具，写入需预览确认。"
+    }
+  ]
+}
