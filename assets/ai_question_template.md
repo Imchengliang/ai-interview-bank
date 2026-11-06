@@ -1,6 +1,6 @@
 # AI 岗位面试题题库
 
-> 单一真源。由 skill `ai-interview-question-bank` 维护，路径记录在该 skill 的 `references/bank_config.md`。
+> 单一真源。由 `ai-interview-bank` 插件维护，路径记录在 `config.json` 的 `bank_path`。
 > 流程：读取帖子 → 按类别去重记录 → 逐个分析 → 写入答案。
 > 编辑原则：只追加新题、只给「待分析」题补答案；不改写已有题干；编号全局递增且不复用。
 > 帖子自带的参考答案仅作校验素材：先独立拆解思路、写出答案，再对照补漏／纠错，不照抄入库。
