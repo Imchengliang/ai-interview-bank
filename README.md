@@ -96,6 +96,29 @@ P0 只启用 `m0_manual_link`（手动贴链接）。`m1`–`m8`（关键词扫�
 
 `RELATED` 边直接来自题库条目的「关联」字段，不是模型猜的。`gaps.json` 是给「补题」用的：哪些方向题目过少、哪些题没有任何关联。
 
+## Obsidian 题库 KG
+
+如果你用 Obsidian，可以把题库导出成一份**派生视图**：题库 md 仍是唯一真源，导出目录是它的镜像，不反向写回。
+
+```bash
+python3 cli.py obsidian                    # 生成/更新到题库同级的「题库笔记」
+python3 cli.py obsidian --vault <路径>      # 指定其它位置
+python3 cli.py obsidian --dry-run          # 只看会改哪些文件
+python3 cli.py finalize --obsidian         # 收尾时顺带同步
+```
+
+逻辑是「没有就建、有了就更新」：首次全量生成，之后只重写内容真正变化的笔记，重复运行是幂等的。
+
+- 每道题一篇 `Qxxx.md`，YAML frontmatter 在最顶部（Obsidian 能识别为 properties）。
+- `**关联**` 字段里的 `Q019（三层归因）` 变成 `[[Q019]] — 三层归因`，Graph View 里就是可点击的边；现有的 485 条关联全部转成双链。
+- 类别、实体、角度各有枢纽页，带指向题目的链接，形成 backlink 网络。
+- 每篇笔记末尾的「我的笔记」区（`<!-- USER NOTES: BEGIN/END -->`）在重建时**原样保留**，可以在里面写自己的复习心得。
+- 附带一份 Graph View 配色，按节点类型区分。
+
+把生成目录作为 vault 在 Obsidian 里打开即可。注意这里的关系数据全部来自题库字段，不是模型推断——题库改了，重新同步一次就一致。
+
+> 一个已知的解析细节：题库里「解题思路」写的是无冒号的 `**解题思路**` 后接编号列表，解析器已兼容这种格式，导出的笔记会带上完整的解题步骤。
+
 ## MCP 工具（只读）
 
 `bank_status`、`list_questions`、`search_questions`、`graph_summary`、`graph_neighbors`、`preview_note`。

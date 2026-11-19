@@ -12,7 +12,9 @@ from pathlib import Path
 
 HEADER_RE = re.compile(r"^####\s+Q(\d{3,})\s*·\s*(.*?)\s*·\s*状态：\s*(\S+)")
 SECTION_RE = re.compile(r"^###\s+(\d+)\.\s+(.*)$")
-FIELD_RE = re.compile(r"^\*\*(题目|关联|考什么|解题思路|参考答案)\*\*[：:]\s*(.*)$")
+# Accept both "**解题思路**：text" and the bank's common "**解题思路**" followed
+# by a numbered list on the next line.
+FIELD_RE = re.compile(r"^\*\*(题目|关联|考什么|解题思路|参考答案)\*\*[：:]?\s*(.*)$")
 RELATED_ID_RE = re.compile(r"Q(\d{3,})")
 
 
@@ -78,15 +80,17 @@ def parse_bank(path: Path) -> BankSnapshot:
     current_section = ""
     current: Question | None = None
     block: list[str] = []
+    pending_field: str | None = None
 
     def close() -> None:
-        nonlocal current, block
+        nonlocal current, block, pending_field
         if current is not None:
             current.raw = "".join(block)
             snap.questions.append(current)
-        current, block = None, []
+        current, block, pending_field = None, [], None
 
     for line in lines:
+        stripped = line.strip()
         if line.lstrip().startswith("```"):
             in_code = not in_code
             if current is not None:
@@ -116,11 +120,34 @@ def parse_bank(path: Path) -> BankSnapshot:
             block = [line]
             continue
 
-        if current is not None:
+        if current is None:
+            continue
+
+        matched = FIELD_RE.match(line)
+        if matched:
+            name, inline = matched.group(1), matched.group(2).strip()
             block.append(line)
-            matched = FIELD_RE.match(line)
-            if matched:
-                current.fields[matched.group(1)] = matched.group(2).strip()
+            if inline:
+                current.fields[name] = inline
+                pending_field = None
+            else:
+                # e.g. "**解题思路**" followed by a numbered list on later lines
+                current.fields[name] = ""
+                pending_field = name
+            continue
+
+        # A pending field with no inline value absorbs following list/paragraph
+        # lines until the next field, header, section, or blank-line break.
+        if pending_field and not stripped:
+            pending_field = None
+            block.append(line)
+            continue
+        if pending_field:
+            current.fields[pending_field] += ("\n" if current.fields[pending_field] else "") + stripped
+            block.append(line)
+            continue
+
+        block.append(line)
     close()
     return snap
 

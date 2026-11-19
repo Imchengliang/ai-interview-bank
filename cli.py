@@ -15,7 +15,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from core import bank, config, graph, pipeline, sources  # noqa: E402
+from core import bank, config, graph, obsidian, pipeline, sources  # noqa: E402
 
 
 def emit(payload: dict) -> None:
@@ -81,7 +81,11 @@ def cmd_stage(args) -> None:
 
 def cmd_finalize(args) -> None:
     cfg, _ = config.load_config(args.config)
-    emit(pipeline.finalize(cfg))
+    result = pipeline.finalize(cfg)
+    if args.obsidian:
+        vault = Path(args.obsidian).expanduser() if args.obsidian != "*" else obsidian.default_vault(cfg)
+        result["obsidian"] = obsidian.sync(cfg, vault)
+    emit(result)
 
 
 def cmd_graph(args) -> None:
@@ -105,6 +109,12 @@ def cmd_graph(args) -> None:
         emit(json.loads(path.read_text(encoding="utf-8")))
     else:
         print(path.read_text(encoding="utf-8"), end="")
+
+
+def cmd_obsidian(args) -> None:
+    cfg, _ = config.load_config(args.config)
+    vault = Path(args.vault).expanduser() if args.vault else obsidian.default_vault(cfg)
+    emit(obsidian.sync(cfg, vault, dry_run=args.dry_run))
 
 
 def cmd_search(args) -> None:
@@ -145,13 +155,21 @@ def main() -> int:
     stage.add_argument("--confirm", action="store_true")
     stage.set_defaults(func=cmd_stage)
 
-    sub.add_parser("finalize", help="Step 5 机械收尾：校验 + 重算图谱").set_defaults(func=cmd_finalize)
+    fin = sub.add_parser("finalize", help="Step 5 机械收尾：校验 + 重算图谱")
+    fin.add_argument("--obsidian", nargs="?", const="*", default=None,
+                     help="同时同步 Obsidian 笔记（可选 vault 路径，默认题库同级目录）")
+    fin.set_defaults(func=cmd_finalize)
 
     gp = sub.add_parser("graph", help="知识图谱导出")
     gp.add_argument("--refresh", action="store_true")
     gp.add_argument("--format", choices=["json", "mermaid", "gaps", "summary"],
                     default="summary")
     gp.set_defaults(func=cmd_graph)
+
+    op = sub.add_parser("obsidian", help="从题库增量生成/更新 Obsidian 题库笔记")
+    op.add_argument("--vault", help="vault 路径（默认：题库同级 '题库笔记' 目录）")
+    op.add_argument("--dry-run", action="store_true", help="只报告将创建/更新哪些文件，不写入")
+    op.set_defaults(func=cmd_obsidian)
 
     sp = sub.add_parser("search", help="题库全文检索")
     sp.add_argument("--query", required=True)

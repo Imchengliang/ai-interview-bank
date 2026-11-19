@@ -17,7 +17,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from core import bank, config, graph, pipeline, sources  # noqa: E402
+from core import bank, config, graph, obsidian, pipeline, sources  # noqa: E402
 
 results: list[tuple[str, bool, str]] = []
 
@@ -122,6 +122,29 @@ def main() -> int:
           bank.verify(after_snapshot)["pending"] == ["Q186"])
     check("staging marks source cursor",
           "smoke-e2e" in sources.load_cursor(local)["processed"])
+    # --- Obsidian vault incremental sync -----------------------------------
+    vault = tmpdir / "vault"
+    s1 = obsidian.sync(local, vault)
+    check("obsidian initial build creates notes", s1["created"] == s1["questions"],
+          f"created={s1['created']}")
+    note = vault / "Q001.md"
+    text0 = note.read_text(encoding="utf-8")
+    check("obsidian note has frontmatter first",
+          text0.startswith("---\nqid: Q001\n"))
+    check("obsidian wikilink from 关联", "[[Q002]]" in text0)
+    check("obsidian解题思路由多行解析", "## 解题思路" in text0)
+
+    s2 = obsidian.sync(local, vault)
+    check("obsidian second sync is idempotent", s2["unchanged"] == s2["questions"],
+          f"unchanged={s2['unchanged']}")
+
+    text1 = text0.replace("<!-- USER NOTES: BEGIN -->",
+                          "<!-- USER NOTES: BEGIN -->\n我的复习笔记")
+    note.write_text(text1, encoding="utf-8")
+    s3 = obsidian.sync(local, vault)
+    check("obsidian preserves user notes",
+          s3["user_notes_preserved"] == 1 and "我的复习笔记" in note.read_text(encoding="utf-8"))
+
     shutil.rmtree(tmpdir, ignore_errors=True)
 
     after = (cfg.bank_path.stat().st_mtime_ns, cfg.bank_path.stat().st_size)

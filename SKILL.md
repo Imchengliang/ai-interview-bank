@@ -87,6 +87,25 @@ python3 cli.py stage --preview <preview_id> --items items.json --confirm
 
 查询：`graph --format gaps`、`neighbors --qid Q001`、MCP `graph_summary` / `graph_neighbors`。
 
+## Obsidian 题库 KG（派生视图）
+
+题库 `ai_question.md` 仍是唯一真源；Obsidian 目录是**由它生成的镜像**，不反向写回。首次生成、之后增量更新：
+
+```bash
+python3 cli.py obsidian                    # 生成/更新到题库同级的「题库笔记」目录
+python3 cli.py obsidian --vault <路径>      # 指定其它 vault
+python3 cli.py obsidian --dry-run          # 只报告将创建/更新哪些文件
+python3 cli.py finalize --obsidian         # Step 5 收尾时顺带同步
+```
+
+- 每道题一个 `Qxxx.md`：YAML frontmatter（qid/类别/状态/实体/角度）+ 题目 + 关联双链 + 考什么/解题思路/参考答案。
+- `**关联**` 里的 `Q019（三层归因）` 渲染成 `[[Q019]] — 三层归因`，Graph View 里就是可点击的边。
+- 类别/实体/角度各生成枢纽页（`类别-*.md`、`实体-*.md`、`角度-*.md`），带反向链接。
+- 每篇笔记末尾有 `<!-- USER NOTES: BEGIN/END -->` 区，**重建时原样保留**手写内容。
+- 只有渲染内容变化的笔记才重写，重复运行是幂等的。
+
+Obsidian 用法：把生成目录（默认 `~/Documents/interview/题库笔记`）作为 vault 打开，开 Graph View 即可。
+
 ## MCP 工具（只读）
 
 `python3 cli.py mcp` 或 `python3 mcp_server.py` 启动 stdio server，暴露 `bank_status`、`list_questions`、`search_questions`、`graph_summary`、`graph_neighbors`、`preview_note`。**没有任何写工具**：写库一律走本地 CLI/Skill，这也规避了 Codex 自动拒绝第三方 MCP 写调用的行为。
