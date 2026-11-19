@@ -22,10 +22,16 @@ from pathlib import Path
 ROOT = Path(sys.argv[1] if len(sys.argv) > 1 else Path(__file__).resolve().parent.parent)
 RESULTS: list[tuple[str, str, str]] = []
 
+# Claude Code resolves local-scope plugins relative to the project directory.
+# Running from the plugin dir (or from $HOME) makes `plugin details` fail with
+# "Plugin not found" even though the plugin is installed. Always run host CLIs
+# from the parent of the plugin package, regardless of the caller's cwd.
+DEFAULT_CWD = ROOT.parent
+
 
 def run(cmd: list[str], timeout: int = 60, cwd: Path | None = None):
     try:
-        p = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout, cwd=cwd)
+        p = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout, cwd=cwd or DEFAULT_CWD)
         return p.returncode, p.stdout, p.stderr
     except FileNotFoundError:
         return None, "", "command not found"
