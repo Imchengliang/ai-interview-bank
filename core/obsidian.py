@@ -31,20 +31,36 @@ def default_vault(cfg: Config) -> Path:
     return cfg.bank_path.parent / DEFAULT_VAULT_NAME
 
 
+QID_RE = re.compile(r"Q\d{3,}")
+# A link is "Q123" optionally followed by one parenthesised note. The note may
+# itself contain 、 or other Q ids, so splitting on separators is wrong: we scan
+# forward and skip the whole parenthesised span.
+QID_NOTE_RE = re.compile(r"\s*[（(]([^）)]*)[）)]")
+
+
 def _wikilinks(q, all_ids: set[str]) -> str:
     """Turn '关联：Q019（..）、Q038（..）' into clickable wikilinks."""
     raw = q.fields.get("关联", "").strip()
     if not raw or raw == "无":
         return ""
-    out = []
-    for part in re.split(r"[、,，;；]\s*", raw):
-        m = re.search(r"(Q\d{3,})(.*)", part)
+    out: list[str] = []
+    seen: set[str] = set()
+    pos = 0
+    while True:
+        m = QID_RE.search(raw, pos)
         if not m:
+            break
+        qid = m.group(0)
+        pos = m.end()
+        note = ""
+        nm = QID_NOTE_RE.match(raw, pos)
+        if nm:
+            note = nm.group(1).strip()
+            pos = nm.end()
+        if qid in seen:
             continue
-        qid = m.group(1)
-        note = m.group(2).strip().strip("（）()")
-        target = qid if qid in all_ids else qid
-        out.append(f"- [[{target}]]{(' — ' + note) if note else ''}")
+        seen.add(qid)
+        out.append(f"- [[{qid}]]{(' — ' + note) if note else ''}")
     return "\n".join(out)
 
 
