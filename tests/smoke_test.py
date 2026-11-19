@@ -17,7 +17,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from core import bank, config, graph, obsidian, pipeline, sources  # noqa: E402
+from core import bank, coach, config, graph, obsidian, pipeline, sources  # noqa: E402
 
 results: list[tuple[str, bool, str]] = []
 
@@ -119,9 +119,22 @@ def main() -> int:
     check("staging removes empty-section placeholder",
           "_暂无题目_" not in after_text.split("### 1. LLM 基础与原理")[1].split("### 2.")[0])
     check("staged question stays 待分析",
-          bank.verify(after_snapshot)["pending"] == ["Q186"])
+          bank.verify(after_snapshot)["pending"] == [a["id"] for a in staged["assignments"]])
     check("staging marks source cursor",
           "smoke-e2e" in sources.load_cursor(local)["processed"])
+    # --- Socratic coach ------------------------------------------------------
+    plan = coach.plan(cfg, qid="Q001")
+    check("coach exposes root probe", bool(plan["root_probe"]))
+    check("coach splits 解题思路 into steps", len(plan["steps"]) >= 2,
+          f"steps={len(plan['steps'])}")
+    check("coach hides answer in reveal_only",
+          "answer" in plan["reveal_only"] and "answer" not in plan)
+    random_plan = coach.plan(cfg)
+    check("coach random pick returns a plan", bool(random_plan["qid"]))
+    listed = coach.plan(cfg, list_ids=True)
+    check("coach lists usable questions", listed["total"] >= 180,
+          f"total={listed['total']}")
+
     # --- Obsidian vault incremental sync -----------------------------------
     vault = tmpdir / "vault"
     s1 = obsidian.sync(local, vault)

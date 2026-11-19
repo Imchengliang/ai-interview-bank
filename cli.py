@@ -15,7 +15,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from core import bank, config, graph, obsidian, pipeline, sources  # noqa: E402
+from core import bank, coach, config, graph, obsidian, pipeline, sources  # noqa: E402
 
 
 def emit(payload: dict) -> None:
@@ -128,6 +128,12 @@ def cmd_neighbors(args) -> None:
     emit(graph.load(cfg).neighbors(args.qid.upper()))
 
 
+def cmd_coach(args) -> None:
+    cfg, _ = config.load_config(args.config)
+    emit(coach.plan(cfg, qid=args.qid, category=args.category,
+                    list_ids=args.list))
+
+
 def cmd_mcp(args) -> None:
     from mcp_server import serve
     serve()
@@ -179,6 +185,12 @@ def main() -> int:
     nb = sub.add_parser("neighbors", help="某题的一跳关联与实体")
     nb.add_argument("--qid", required=True)
     nb.set_defaults(func=cmd_neighbors)
+
+    cp = sub.add_parser("coach", help="苏格拉底式练习：重新推导出某题的答案")
+    cp.add_argument("--qid", help="指定题目，如 Q117；不填则随机抽")
+    cp.add_argument("--category", help="限定类别（与随机抽配合），如 'Agent 与工具调用'")
+    cp.add_argument("--list", action="store_true", help="列出所有可练习的题目编号")
+    cp.set_defaults(func=cmd_coach)
 
     sub.add_parser("mcp", help="启动只读 MCP stdio server").set_defaults(func=cmd_mcp)
 
