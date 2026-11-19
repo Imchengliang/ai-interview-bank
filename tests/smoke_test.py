@@ -131,6 +131,25 @@ def main() -> int:
           "answer" in plan["reveal_only"] and "answer" not in plan)
     random_plan = coach.plan(cfg)
     check("coach random pick returns a plan", bool(random_plan["qid"]))
+    by_find = coach.plan(cfg, find="多步时序")
+    check("coach --find matches by content", by_find["qid"] == "Q191",
+          f"got={by_find['qid']}")
+    by_cat = coach.plan(cfg, category="RAG")
+    check("coach --category fuzzy matches", "RAG" in by_cat["category"],
+          by_cat.get("category", ""))
+    by_num = coach.plan(cfg, category="5")
+    check("coach --category accepts section number",
+          by_num["category"].startswith("Agent"), by_num.get("category", ""))
+    cat_list = coach.plan(cfg, list_ids=True, list_category="RAG")
+    check("coach --list --category filters", cat_list["total"] >= 10,
+          f"total={cat_list['total']}")
+    bad = None
+    try:
+        coach.plan(cfg, find="不存在的关键词xyz")
+    except ValueError as exc:
+        bad = str(exc)
+    check("coach --find reports no match", bad is not None)
+
     listed = coach.plan(cfg, list_ids=True)
     check("coach lists usable questions", listed["total"] >= 180,
           f"total={listed['total']}")

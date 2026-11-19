@@ -84,14 +84,27 @@ python3 cli.py stage --preview <preview_id> --items items.json --confirm
 
 ### 触发
 
-```
-python3 cli.py coach --qid Q117   # 指定题
-python3 cli.py coach              # 随机抽一道已分析题
-python3 cli.py coach --category "RAG"   # 限定类别随机抽
-python3 cli.py coach --list       # 列出可练习的题号
+用户怎么说都能接，先把它翻译成对应命令：
+
+| 用户说 | 用哪个 |
+|---|---|
+| 「考我 Q117」 | `coach --qid Q117` |
+| 「练一道 MCP 的题」／「考我那道讲工具幻觉的」 | `coach --find "MCP"` / `--find "工具幻觉"` |
+| 「练一道 RAG 的」／「来道 Agent 的」 | `coach --category "RAG"`（类别支持模糊，也可用编号 `--category 5`） |
+| 「随便考我一道」 | `coach` |
+| 「有哪些题可以练」 | `coach --list`，或 `coach --list --category "RAG"` |
+
+```bash
+python3 cli.py coach --qid Q117          # 精确题号
+python3 cli.py coach --find "多步时序"    # 按题目内容模糊匹配
+python3 cli.py coach --category "RAG"    # 按类别随机抽（模糊匹配类别名或编号）
+python3 cli.py coach                      # 完全随机
+python3 cli.py coach --list               # 列出可练习题（含各类别数量）
 ```
 
 返回的 JSON 里：`root_probe` 是这道题要考的矛盾，`steps` 是 2–4 个推导步骤，**`reveal_only` 是答案，全程隐藏**。
+
+**`--find` 返回 `ambiguous: true` 时**：关键词只是初筛，按语义看 `candidates` 里哪道才是用户说的那道。判断明确就直接用更贴切的那道；拿不准就把 2–3 个候选的题目念给用户选，不要硬选。
 
 ### 引导流程（严格遵守）
 

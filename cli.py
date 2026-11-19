@@ -130,8 +130,8 @@ def cmd_neighbors(args) -> None:
 
 def cmd_coach(args) -> None:
     cfg, _ = config.load_config(args.config)
-    emit(coach.plan(cfg, qid=args.qid, category=args.category,
-                    list_ids=args.list))
+    emit(coach.plan(cfg, qid=args.qid, category=args.category, find=args.find,
+                    list_ids=args.list, list_category=args.category if args.list else None))
 
 
 def cmd_mcp(args) -> None:
@@ -187,9 +187,10 @@ def main() -> int:
     nb.set_defaults(func=cmd_neighbors)
 
     cp = sub.add_parser("coach", help="苏格拉底式练习：重新推导出某题的答案")
-    cp.add_argument("--qid", help="指定题目，如 Q117；不填则随机抽")
-    cp.add_argument("--category", help="限定类别（与随机抽配合），如 'Agent 与工具调用'")
-    cp.add_argument("--list", action="store_true", help="列出所有可练习的题目编号")
+    cp.add_argument("--qid", help="精确题号，如 Q117")
+    cp.add_argument("--find", help="按题目内容模糊匹配，如 'MCP 套壳' 或 '多步时序'")
+    cp.add_argument("--category", help="按类别练（支持模糊，如 'RAG'/'Agent'/'5'），配合 --list 则列出该类题目")
+    cp.add_argument("--list", action="store_true", help="列出可练习题（可按 --category 过滤）")
     cp.set_defaults(func=cmd_coach)
 
     sub.add_parser("mcp", help="启动只读 MCP stdio server").set_defaults(func=cmd_mcp)
